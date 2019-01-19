@@ -1,29 +1,20 @@
-package me.debugjoker.sell.domain;
+package me.debugjoker.sell.dto;
 
 import lombok.Data;
-import me.debugjoker.sell.enums.OrderStatusEnum;
-import me.debugjoker.sell.enums.PayStatusEnum;
-import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.data.annotation.Transient;
+import me.debugjoker.sell.domain.OrderDetail;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author: ZhangMengwei
- * @create: 2018-12-10 21:32
- * 订单实体类
+ * @create: 2019-01-19 15:59
  **/
-@Entity
 @Data
-@DynamicUpdate
-public class OrderMaster {
+public class OrderDTO {
 
     /** 订单id */
-    @Id
     private String orderId;
 
     /** 买家名字 */
@@ -42,10 +33,10 @@ public class OrderMaster {
     private BigDecimal orderAmount;
 
     /** 订单状态，默认新下单 */
-    private Integer orderStatus = OrderStatusEnum.NEW.getCode();
+    private Integer orderStatus;
 
     /** 支付状态，默认未支付*/
-    private Integer payStatus = PayStatusEnum.WAIT.getCode();
+    private Integer payStatus;
 
     /** 创建时间 */
     private Date createTime;
@@ -53,4 +44,6 @@ public class OrderMaster {
     /** 更新时间 */
     private Date updateTime;
 
+    /** 订单明细列表 */
+    List<OrderDetail> orderDetailList;
 }
