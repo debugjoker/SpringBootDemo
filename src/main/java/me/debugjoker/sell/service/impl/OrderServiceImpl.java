@@ -6,6 +6,8 @@ import me.debugjoker.sell.domain.OrderMaster;
 import me.debugjoker.sell.domain.ProductInfo;
 import me.debugjoker.sell.dto.CartDTO;
 import me.debugjoker.sell.dto.OrderDTO;
+import me.debugjoker.sell.enums.OrderStatusEnum;
+import me.debugjoker.sell.enums.PayStatusEnum;
 import me.debugjoker.sell.enums.ResultEnum;
 import me.debugjoker.sell.exception.SellException;
 import me.debugjoker.sell.repository.OrderDetailRepository;
@@ -56,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
                 throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
             }
             // 2.计算订单的总价
-            orderAmount = orderDetail.getProductPrice()
+            orderAmount = productInfo.getProductPrice()
                     .multiply(new BigDecimal(orderDetail.getProductQuantity()))
                     .add(orderAmount);
 
@@ -73,11 +75,14 @@ public class OrderServiceImpl implements OrderService {
 
         // 写入orderMaster订单数据库
         OrderMaster orderMaster = new OrderMaster();
+        BeanUtils.copyProperties(orderDTO, orderMaster);
         orderMaster.setOrderAmount(orderAmount);
         orderMaster.setOrderId(orderId);
-        BeanUtils.copyProperties(orderDTO, orderMaster);
+        orderMaster.setOrderStatus(OrderStatusEnum.NEW.getCode());
+        orderMaster.setPayStatus(PayStatusEnum.WAIT.getCode());
         orderMasterRepository.save(orderMaster);
 
+//        BeanUtils.copyProperties(orderMaster, orderDTO);
         /**
         List<CartDTO> cartDTOList = new ArrayList<>();
         orderDTO.getOrderDetailList().stream()
