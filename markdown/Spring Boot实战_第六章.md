@@ -1,0 +1,651 @@
+# Spring Boot 企业微信点餐系统学习 第六章学习笔记
+
+## 买家订单DAO
+
+新建订单实体类OrderMaster
+
+```java
+package me.debugjoker.sell.domain;
+
+import lombok.Data;
+import me.debugjoker.sell.enums.OrderStatusEnum;
+import me.debugjoker.sell.enums.PayStatusEnum;
+import org.hibernate.annotations.DynamicUpdate;
+
+import javax.persistence.Entity;
+import java.math.BigDecimal;
+import java.util.Date;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2018-12-10 21:32
+ * 订单实体类
+ **/
+@Entity
+@Data
+@DynamicUpdate
+public class OrderMaster {
+
+    /** 订单id */
+    @Id
+    private String orderId;
+
+    /** 买家名字 */
+    private String buyerName;
+
+    /** 买家手机号 */
+    private String buyerPhone;
+
+    /** 买家地址 */
+    private String buyerAddress;
+
+    /** 买家微信openid */
+    private String buyerOpenid;
+
+    /** 订单总金额 */
+    private BigDecimal orderAmount;
+
+    /** 订单状态，默认新下单 */
+    private Integer orderStatus = OrderStatusEnum.NEW.getCode();
+
+    /** 支付状态，默认未支付*/
+    private Integer payStatus = PayStatusEnum.WAIT.getCode();
+
+    /** 创建时间 */
+    private Date createTime;
+
+    /** 更新时间 */
+    private Date updateTime;
+}
+```
+新建订单状态枚举类
+```java
+package me.debugjoker.sell.enums;
+
+import lombok.Getter;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2018-12-10 21:34
+ * 订单状态枚举类
+ **/
+@Getter
+public enum OrderStatusEnum {
+    NEW(0, "新订单"),
+    FINISHED(1, "完结"),
+    CANCEL(2, "已取消"),
+    ;
+
+    private Integer code;
+
+    private String message;
+
+    OrderStatusEnum(Integer code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+}
+```
+
+新建支付状态枚举类
+
+```java
+package me.debugjoker.sell.enums;
+
+import lombok.Getter;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2018-12-10 21:45
+ **/
+@Getter
+public enum PayStatusEnum {
+    WAIT(0, "等待支付"),
+    SUCCESS(1, "支付成功"),
+    ;
+
+    private Integer code;
+
+    private String message;
+
+    PayStatusEnum(Integer code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+}
+
+```
+同理新建OrderDetail类
+```java
+package me.debugjoker.sell.domain;
+
+import lombok.Data;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.math.BigDecimal;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2018-12-10 21:54
+ * 订单详情表
+ **/
+@Entity
+@Data
+public class OrderDetail {
+
+    @Id
+    private String detailId;
+
+    /**
+     * 订单id
+     */
+    private String orderId;
+    /**
+     * 商品id
+     */
+    private String productId;
+    /**
+     * 商品名称
+     */
+    private String productName;
+    /**
+     * 商品单价
+     */
+    private BigDecimal productPrice;
+    /**
+     * 商品数量
+     */
+    private Integer productQuantity;
+    /**
+     * 商品小图
+     */
+    private String productIcon;
+}
+```
+新建两者的Repository接口
+```java
+package me.debugjoker.sell.repository;
+
+import me.debugjoker.sell.domain.OrderMaster;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2018-12-10 21:59
+ **/
+
+public interface OrderMasterRepository extends JpaRepository<OrderMaster, String> {
+
+    Page<OrderMaster> findByBuyerOpenid(String buyerOpenid, Pageable pageable);
+}
+
+```
+
+```java
+package me.debugjoker.sell.repository;
+
+import me.debugjoker.sell.domain.OrderDetail;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2018-12-10 22:02
+ **/
+
+public interface OrderDetailRepository extends JpaRepository<OrderDetail, String> {
+
+    List<OrderDetail> findByOrderId(String orderId);
+}
+
+```
+
+然后是相关的测试类
+
+
+
+OrderMasterRepositoryTest.java
+
+```java
+package me.debugjoker.sell.repository;
+
+import me.debugjoker.sell.domain.OrderMaster;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.math.BigDecimal;
+
+import static org.junit.Assert.*;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2018-12-17 21:45
+ **/
+@SpringBootTest
+@RunWith(SpringRunner.class)
+public class OrderMasterRepositoryTest {
+
+    @Autowired
+    private OrderMasterRepository orderMasterRepository;
+
+    @Test
+    public void saveTest() {
+        OrderMaster orderMaster = new OrderMaster();
+        orderMaster.setOrderId("123457");
+        orderMaster.setBuyerName("二师兄");
+        orderMaster.setBuyerPhone("1234534232");
+        orderMaster.setBuyerAddress("水帘洞");
+        orderMaster.setBuyerOpenid("112113");
+        orderMaster.setOrderAmount(new BigDecimal(2.7));
+
+        OrderMaster result = orderMasterRepository.save(orderMaster);
+        Assert.assertNotNull(result);
+    }
+
+    @Test
+    public void findByBuyerOpenid() throws Exception {
+        PageRequest request = new PageRequest(0, 1);
+
+        Page<OrderMaster> result = orderMasterRepository.findByBuyerOpenid("112112", request);
+
+        Assert.assertNotEquals(0,result.getTotalElements());
+    }
+}
+```
+
+OrderDetailRepositoryTest.java
+
+```java
+package me.debugjoker.sell.repository;
+
+import me.debugjoker.sell.domain.OrderDetail;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2018-12-17 22:22
+ **/
+@SpringBootTest
+@RunWith(SpringRunner.class)
+public class OrderDetailRepositoryTest {
+
+    @Autowired
+    private OrderDetailRepository repository;
+
+    @Test
+    public void save() {
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setDetailId("1111111122");
+        orderDetail.setOrderId("12121214");
+        orderDetail.setProductIcon("xxx.jpg");
+        orderDetail.setProductId("1214413");
+        orderDetail.setProductName("product");
+        orderDetail.setProductPrice(new BigDecimal(2.6));
+        orderDetail.setProductQuantity(35);
+
+        OrderDetail result = repository.save(orderDetail);
+        Assert.assertNotNull(result);
+    }
+
+    @Test
+    public void findByOrderIdTest() throws Exception {
+        List<OrderDetail> result = repository.findByOrderId("12121214");
+
+        Assert.assertNotEquals(0, result.size());
+    }
+
+}
+```
+## 买家订单service创建
+
+OrderService.java
+
+```java
+package me.debugjoker.sell.service;
+
+import me.debugjoker.sell.dto.OrderDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2019-01-19 15:42
+ **/
+
+public interface OrderService {
+
+    /** 创建订单 */
+    OrderDTO create(OrderDTO orderDTO);
+
+    /** 查询单个订单 */
+    OrderDTO findOne(String orderId);
+
+    /** 查询订单列表 */
+    Page<OrderDTO> findList(String buyerOpenid, Pageable pageable);
+
+    /** 取消订单 */
+    OrderDTO cancel(OrderDTO orderDTO);
+
+    /** 完结订单 */
+    OrderDTO finsh(OrderDTO orderDTO);
+
+    /** 支付订单 */
+    OrderDTO paid(OrderDTO orderDTO);
+}
+
+```
+
+新建包名 dto 存放数据传输对象
+
+新建OrderDTO.java
+
+```java
+package me.debugjoker.sell.dto;
+
+import lombok.Data;
+import me.debugjoker.sell.domain.OrderDetail;
+import me.debugjoker.sell.enums.OrderStatusEnum;
+import me.debugjoker.sell.enums.PayStatusEnum;
+
+import javax.persistence.Id;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2019-01-19 15:59
+ **/
+@Data
+public class OrderDTO {
+
+    /** 订单id */
+    private String orderId;
+
+    /** 买家名字 */
+    private String buyerName;
+
+    /** 买家手机号 */
+    private String buyerPhone;
+
+    /** 买家地址 */
+    private String buyerAddress;
+
+    /** 买家微信openid */
+    private String buyerOpenid;
+
+    /** 订单总金额 */
+    private BigDecimal orderAmount;
+
+    /** 订单状态，默认新下单 */
+    private Integer orderStatus;
+
+    /** 支付状态，默认未支付*/
+    private Integer payStatus;
+
+    /** 创建时间 */
+    private Date createTime;
+
+    /** 更新时间 */
+    private Date updateTime;
+
+    List<OrderDetail> orderDetailList;
+}
+```
+
+新建OrderServiceImpl实现类
+
+```java
+package me.debugjoker.sell.service.impl;
+
+import com.sun.org.apache.xml.internal.security.keys.KeyUtils;
+import me.debugjoker.sell.domain.OrderDetail;
+import me.debugjoker.sell.domain.OrderMaster;
+import me.debugjoker.sell.domain.ProductInfo;
+import me.debugjoker.sell.dto.CartDTO;
+import me.debugjoker.sell.dto.OrderDTO;
+import me.debugjoker.sell.enums.OrderStatusEnum;
+import me.debugjoker.sell.enums.PayStatusEnum;
+import me.debugjoker.sell.enums.ResultEnum;
+import me.debugjoker.sell.exception.SellException;
+import me.debugjoker.sell.repository.OrderDetailRepository;
+import me.debugjoker.sell.repository.OrderMasterRepository;
+import me.debugjoker.sell.service.OrderService;
+import me.debugjoker.sell.service.ProductService;
+import me.debugjoker.sell.utils.KeyUtil;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2019-01-19 16:08
+ **/
+@Service
+public class OrderServiceImpl implements OrderService {
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+
+    @Autowired
+    private OrderMasterRepository orderMasterRepository;
+
+    @Override
+    @Transactional
+    public OrderDTO create(OrderDTO orderDTO) {
+        String orderId = KeyUtil.genUniqueKey();
+        BigDecimal orderAmount = new BigDecimal(0);
+        List<CartDTO> cartDTOList = new ArrayList<>();
+
+        // 1.查询订单里的商品（数量，价格）
+        for (OrderDetail orderDetail : orderDTO.getOrderDetailList()) {
+            ProductInfo productInfo = productService.findOne(orderDetail.getProductId());
+            if (productInfo == null) {
+                throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
+            }
+            // 2.计算订单的总价
+            orderAmount = productInfo.getProductPrice()
+                    .multiply(new BigDecimal(orderDetail.getProductQuantity()))
+                    .add(orderAmount);
+
+            // 3.写入orderDetail订单数据库
+            orderDetail.setDetailId(KeyUtil.genUniqueKey());
+            orderDetail.setOrderId(orderId);
+            // Spring 提供的属性拷贝方法 将productInfo的属性拷贝到orderDetail
+            BeanUtils.copyProperties(productInfo, orderDetail);
+            orderDetailRepository.save(orderDetail);
+
+            CartDTO cartDTO = new CartDTO(orderDetail.getProductId(), orderDetail.getProductQuantity());
+            cartDTOList.add(cartDTO);
+        }
+
+        // 写入orderMaster订单数据库
+        OrderMaster orderMaster = new OrderMaster();
+        BeanUtils.copyProperties(orderDTO, orderMaster);
+        orderMaster.setOrderAmount(orderAmount);
+        orderMaster.setOrderId(orderId);
+        orderMaster.setOrderStatus(OrderStatusEnum.NEW.getCode());
+        orderMaster.setPayStatus(PayStatusEnum.WAIT.getCode());
+        orderMasterRepository.save(orderMaster);
+
+//        BeanUtils.copyProperties(orderMaster, orderDTO);
+        /**
+        List<CartDTO> cartDTOList = new ArrayList<>();
+        orderDTO.getOrderDetailList().stream()
+         .map(e ->new CartDTO(e.getProductId(), e.getProductQuantity()))
+         .collect(Collectors.toList());
+         */
+
+        // 4.扣库存
+        productService.decreaseStock(cartDTOList);
+        return orderDTO;
+    }
+
+    @Override
+    public OrderDTO findOne(String orderId) {
+        return null;
+    }
+
+    @Override
+    public Page<OrderDTO> findList(String buyerOpenid, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public OrderDTO cancel(OrderDTO orderDTO) {
+        return null;
+    }
+
+    @Override
+    public OrderDTO finsh(OrderDTO orderDTO) {
+        return null;
+    }
+
+    @Override
+    public OrderDTO paid(OrderDTO orderDTO) {
+        return null;
+    }
+}
+```
+
+新建exception包放异常定义类
+
+SellException.java
+
+```java
+package me.debugjoker.sell.exception;
+
+import me.debugjoker.sell.enums.ResultEnum;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2019-01-19 19:46
+ **/
+
+public class SellException extends RuntimeException {
+    private Integer code;
+
+    public SellException(ResultEnum resultEnum) {
+        super(resultEnum.getMessage());
+
+        this.code = resultEnum.getCode();
+    }
+
+}
+```
+
+ResultEnum.java
+```java
+package me.debugjoker.sell.enums;
+
+import lombok.Getter;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2019-01-19 19:47
+ **/
+@Getter
+public enum ResultEnum {
+
+    PRODUCT_NOT_EXIST(10, "商品不存在"),
+    ;
+
+
+    private Integer code;
+
+    private String message;
+
+    ResultEnum(Integer code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+}
+```
+
+新建keyUtil.java
+```java
+package me.debugjoker.sell.utils;
+
+import java.util.Random;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2019-01-19 20:01
+ **/
+
+public class KeyUtil {
+
+    /**
+     * 生成唯一的主键
+     * 格式：时间+随机数
+     * 保证多线程时主键的唯一性
+     **/
+    public static synchronized String genUniqueKey() {
+        Random random = new Random();
+        Integer a = random.nextInt(900000) + 100000; // 生成6位随机数
+        return System.currentTimeMillis() + String.valueOf(a);
+    }
+}
+```
+
+新建CartDTO.java
+
+```java
+package me.debugjoker.sell.dto;
+
+import lombok.Data;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2019-01-19 20:51
+ * 购物车封装类
+ **/
+@Data
+public class CartDTO {
+
+    /**
+     * 商品ID
+     */
+    private String productId;
+
+    /**
+     * 数量
+     */
+    private Integer productQuantity;
+
+    public CartDTO(String productId, Integer productQuantity) {
+        this.productId = productId;
+        this.productQuantity = productQuantity;
+    }
+}
+```
