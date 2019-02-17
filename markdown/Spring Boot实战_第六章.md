@@ -345,7 +345,7 @@ public interface OrderService {
     OrderDTO cancel(OrderDTO orderDTO);
 
     /** 完结订单 */
-    OrderDTO finsh(OrderDTO orderDTO);
+    OrderDTO finish(OrderDTO orderDTO);
 
     /** 支付订单 */
     OrderDTO paid(OrderDTO orderDTO);
@@ -540,7 +540,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDTO finsh(OrderDTO orderDTO) {
+    public OrderDTO finish(OrderDTO orderDTO) {
         return null;
     }
 
@@ -783,16 +783,23 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    public void finsh() {
+    public void finish() {
+        OrderDTO orderDTO = orderService.findOne("1547995126238367642");
+        OrderDTO result = orderService.finish(orderDTO);
+        Assert.assertEquals(OrderStatusEnum.FINISHED.getCode(), result.getOrderStatus());
     }
 
     @Test
     public void paid() {
+        OrderDTO orderDTO = orderService.findOne("1547995126238367642");
+        OrderDTO result = orderService.paid(orderDTO);
+        Assert.assertEquals(PayStatusEnum.SUCCESS.getCode(), result.getPayStatus());
     }
 }
 ```
 
 OrderServiceImpl实现类添加方法实现
+
 ```
 @Override
 public Page<OrderDTO> findList(String buyerOpenid, Pageable pageable) {
@@ -844,6 +851,56 @@ public OrderDTO cancel(OrderDTO orderDTO) {
     return orderDTO;
 }
 
+@Override
+@Transactional
+public OrderDTO finish(OrderDTO orderDTO) {
+    // 判断订单状态
+    if (!orderDTO.getPayStatus().equals(OrderStatusEnum.NEW.getCode())) {
+        log.error("[完结订单] 订单状态不正确, orderId={}, orderStatus={}", orderDTO.getOrderId(), orderDTO.getOrderStatus());
+        throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+    }
+    // 修改订单状态
+    OrderMaster orderMaster = new OrderMaster();
+    orderDTO.setOrderStatus(OrderStatusEnum.FINISHED.getCode());
+    BeanUtils.copyProperties(orderDTO, orderMaster);
+    OrderMaster updateResult = orderMasterRepository.save(orderMaster);
+
+    if (updateResult == null) {
+        log.error("[完结订单] 更新失败, orderMaster={}", orderMaster);
+        throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+    }
+
+    return orderDTO;
+}
+
+@Override
+@Transactional
+public OrderDTO paid(OrderDTO orderDTO) {
+    // 判断订单状态
+    if (!orderDTO.getPayStatus().equals(OrderStatusEnum.NEW.getCode())) {
+        log.error("[支付订单] 订单状态不正确, orderId={}, orderStatus={}", orderDTO.getOrderId(), orderDTO.getOrderStatus());
+        throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+    }
+
+    // 判断支付状态
+    if (!orderDTO.getPayStatus().equals(PayStatusEnum.WAIT.getCode())) {
+        log.error("[支付订单] 订单支付状态不正确, orderId={}, orderStatus={}", orderDTO.getOrderId(), orderDTO.getPayStatus());
+        throw new SellException(ResultEnum.ORDER_PAY_STATUS_ERROR);
+    }
+
+    // 修改支付状态
+    OrderMaster orderMaster = new OrderMaster();
+    orderDTO.setPayStatus(PayStatusEnum.SUCCESS.getCode());
+    BeanUtils.copyProperties(orderDTO, orderMaster);
+    OrderMaster updateResult = orderMasterRepository.save(orderMaster);
+
+    if (updateResult == null) {
+        log.error("[支付订单] 更新失败, orderMaster={}", orderMaster);
+        throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+    }
+
+    return orderDTO;
+}
 ```
 
 ProductServiceImpl实现类添加方法实现

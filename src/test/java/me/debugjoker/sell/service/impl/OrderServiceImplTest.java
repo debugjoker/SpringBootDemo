@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.debugjoker.sell.domain.OrderDetail;
 import me.debugjoker.sell.dto.OrderDTO;
 import me.debugjoker.sell.enums.OrderStatusEnum;
+import me.debugjoker.sell.enums.PayStatusEnum;
 import me.debugjoker.sell.repository.OrderDetailRepository;
 import org.junit.Assert;
 import org.junit.Test;
@@ -81,10 +82,16 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    public void finsh() {
+    public void finish() {
+        OrderDTO orderDTO = orderService.findOne("1547995126238367642");
+        OrderDTO result = orderService.finish(orderDTO);
+        Assert.assertEquals(OrderStatusEnum.FINISHED.getCode(), result.getOrderStatus());
     }
 
     @Test
     public void paid() {
+        OrderDTO orderDTO = orderService.findOne("1547995126238367642");
+        OrderDTO result = orderService.paid(orderDTO);
+        Assert.assertEquals(PayStatusEnum.SUCCESS.getCode(), result.getPayStatus());
     }
 }
