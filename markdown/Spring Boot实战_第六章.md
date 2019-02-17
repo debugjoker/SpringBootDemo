@@ -957,5 +957,117 @@ public class OrderMaster2OrderDTOConverter {
 }
 ```
 
+## 买家订单
+新建BuyerOrderController类
+
+新建form包用来包装表单传过来的对象
+
+新建OrderForm类
+```java
+package me.debugjoker.sell.form;
+
+import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2019-02-17 21:30
+ * 包装表单传过来的对象
+ **/
+@Data
+public class OrderForm {
+    
+    /**
+     * 买家姓名
+     **/
+    @NotEmpty(message = "姓名必填")
+    private String name;
+
+    /**
+     * 买家手机号
+     **/
+    @NotEmpty(message = "手机号必填")
+    private String phone;
+
+    /**
+     * 买家地址
+     **/
+    @NotEmpty(message = "地址必填")
+    private String address;
+
+    /**
+     * 买家微信openid
+     **/
+    @NotEmpty(message = "openid必填")
+    private String openid;
+
+    /**
+     * 购物车
+     **/
+    @NotEmpty(message = "购物车不能为空")
+    private String items;
+
+}
+```
+
+新建OrderForm2OrderDTOConverter类OrderForm转换成OrderDTO
+```java
+package me.debugjoker.sell.converter;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import lombok.extern.slf4j.Slf4j;
+import me.debugjoker.sell.domain.OrderDetail;
+import me.debugjoker.sell.dto.OrderDTO;
+import me.debugjoker.sell.enums.ResultEnum;
+import me.debugjoker.sell.exception.SellException;
+import me.debugjoker.sell.form.OrderForm;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2019-02-17 22:15
+ **/
+@Slf4j
+public class OrderForm2OrderDTOConverter {
+    public static OrderDTO convert(OrderForm orderForm) {
+        Gson gson = new Gson();
+        OrderDTO orderDTO = new OrderDTO();
+
+        orderDTO.setBuyerName(orderForm.getName());
+        orderDTO.setBuyerPhone(orderForm.getPhone());
+        orderDTO.setBuyerAddress(orderForm.getAddress());
+        orderDTO.setBuyerOpenid(orderForm.getOpenid());
+
+        List<OrderDetail> orderDetailList = new ArrayList<>();
+        // json中的String转成List<OrderDetail>
+        try {
+            orderDetailList = gson.fromJson(orderForm.getItems(), new TypeToken<List<OrderDetail>>() {
+            }.getType());
+        } catch (Exception e) {
+            log.error("对象转换错误, String={}", orderForm.getItems());
+            throw new SellException(ResultEnum.PARAM_ERROR);
+        }
+
+        orderDTO.setOrderDetailList(orderDetailList);
+        return orderDTO;
+    }
+}
+```
+
+pom.xml中添加gson依赖
+```xml
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+</dependency>
+```
+
+6-11
+
+
+
 
 
