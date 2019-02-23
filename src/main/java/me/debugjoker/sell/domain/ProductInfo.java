@@ -3,9 +3,8 @@ package me.debugjoker.sell.domain;
 import lombok.Data;
 
 import javax.persistence.Entity;
-import java.math.BigDecimal;
 import javax.persistence.Id;
-import java.util.Date;
+import java.math.BigDecimal;
 
 /**
  * 商品

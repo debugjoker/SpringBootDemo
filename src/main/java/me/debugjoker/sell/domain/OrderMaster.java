@@ -4,13 +4,11 @@ import lombok.Data;
 import me.debugjoker.sell.enums.OrderStatusEnum;
 import me.debugjoker.sell.enums.PayStatusEnum;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.data.annotation.Transient;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author: ZhangMengwei
