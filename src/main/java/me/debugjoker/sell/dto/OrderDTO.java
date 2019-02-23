@@ -1,7 +1,9 @@
 package me.debugjoker.sell.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import me.debugjoker.sell.domain.OrderDetail;
+import me.debugjoker.sell.serializer.Date2LongSerializer;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -39,9 +41,11 @@ public class OrderDTO {
     private Integer payStatus;
 
     /** 创建时间 */
+    @JsonSerialize(using = Date2LongSerializer.class)
     private Date createTime;
 
     /** 更新时间 */
+    @JsonSerialize(using = Date2LongSerializer.class)
     private Date updateTime;
 
     /** 订单明细列表 */

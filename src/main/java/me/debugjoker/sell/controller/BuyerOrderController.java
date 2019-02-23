@@ -9,9 +9,11 @@ import me.debugjoker.sell.form.OrderForm;
 import me.debugjoker.sell.service.OrderService;
 import me.debugjoker.sell.utils.ResultVOUtil;
 import me.debugjoker.sell.vo.ResultVO;
-import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,11 +56,18 @@ public class BuyerOrderController {
     }
 
     // 订单列表
+    @GetMapping("/list")
     public ResultVO<List<OrderDTO>> list(@RequestParam("openid") String openid,
-                                         @RequestParam("page") Integer page,
-                                         @RequestParam("size") Integer size) {
-        // TODO
-        return null;
+                                         @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                         @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        if (StringUtils.isEmpty(openid)) {
+            log.error("[查询订单列表] openid为空");
+            throw new SellException(ResultEnum.PARAM_ERROR);
+        }
+
+        PageRequest request = new PageRequest(page, size);
+        Page<OrderDTO> orderDTOPage = orderService.findList(openid, request);
+        return ResultVOUtil.success(orderDTOPage.getContent());
     }
 
     // 订单详情

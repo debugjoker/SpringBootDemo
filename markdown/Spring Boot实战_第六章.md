@@ -959,9 +959,89 @@ public class OrderMaster2OrderDTOConverter {
 
 ## 买家订单
 新建BuyerOrderController类
+```java
+package me.debugjoker.sell.controller;
+
+import lombok.extern.slf4j.Slf4j;
+import me.debugjoker.sell.converter.OrderForm2OrderDTOConverter;
+import me.debugjoker.sell.dto.OrderDTO;
+import me.debugjoker.sell.enums.ResultEnum;
+import me.debugjoker.sell.exception.SellException;
+import me.debugjoker.sell.form.OrderForm;
+import me.debugjoker.sell.service.OrderService;
+import me.debugjoker.sell.utils.ResultVOUtil;
+import me.debugjoker.sell.vo.ResultVO;
+import org.hibernate.criterion.Order;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author: ZhangMengwei
+ * @create: 2019-02-17 21:19
+ **/
+@RestController
+@RequestMapping("/buyer/order")
+@Slf4j
+public class BuyerOrderController {
+
+    @Autowired
+    private OrderService orderService;
+
+    // 创建订单
+    @PostMapping("/create")
+    public ResultVO<Map<String, String>> create(@Valid OrderForm orderForm, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            log.error("[创建订单] 参数不正确, orderForm={}", orderForm);
+            throw new SellException(ResultEnum.PARAM_ERROR.getCode(), bindingResult.getFieldError().getDefaultMessage());
+        }
+
+        OrderDTO orderDTO = OrderForm2OrderDTOConverter.convert(orderForm);
+        if (CollectionUtils.isEmpty(orderDTO.getOrderDetailList())) {
+            log.error("[创建订单] 购物车不能为空");
+            throw new SellException(ResultEnum.CART_EMPTY);
+        }
+
+        OrderDTO createResult = orderService.create(orderDTO);
+        Map<String, String> map = new HashMap<>();
+        map.put("orderId", createResult.getOrderId());
+
+        return ResultVOUtil.success(map);
+    }
+
+    // 订单列表
+    @GetMapping("/list")
+    public ResultVO<List<OrderDTO>> list(@RequestParam("openid") String openid,
+                                         @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                         @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        if (StringUtils.isEmpty(openid)) {
+            log.error("[查询订单列表] openid为空");
+            throw new SellException(ResultEnum.PARAM_ERROR);
+        }
+
+        PageRequest request = new PageRequest(page, size);
+        Page<OrderDTO> orderDTOPage = orderService.findList(openid, request);
+        return ResultVOUtil.success(orderDTOPage.getContent());
+    }
+
+    // 订单详情
+
+    // 取消订单
+
+}
+
+```
 
 新建form包用来包装表单传过来的对象
-
 新建OrderForm类
 ```java
 package me.debugjoker.sell.form;
@@ -1059,13 +1139,93 @@ public class OrderForm2OrderDTOConverter {
 
 pom.xml中添加gson依赖
 ```xml
+<!--
 <dependency>
     <groupId>com.google.code.gson</groupId>
     <artifactId>gson</artifactId>
 </dependency>
+-->
+<!--或者导入这个依赖-->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.24</version>
+</dependency>
 ```
 
-6-11
+列表查询结果为
+```json
+{
+    "code": 0,
+    "msg": "成功",
+    "data": [
+        {
+            "orderId": "1550759811070555098",
+            "buyerName": " 张三",
+            "buyerPhone": "18868822111",
+            "buyerAddress": "慕课网总部",
+            "buyerOpenid": "ew3euwhd7sjw9diwkq",
+            "orderAmount": 14.4,
+            "orderStatus": 0,
+            "payStatus": 0,
+            "createTime": 1550731009000,
+            "updateTime": 1550731009000,
+            "orderDetailList": null
+        },
+        {
+            "orderId": "1550759811070555098",
+            "buyerName": " 张三",
+            "buyerPhone": "18868822111",
+            "buyerAddress": "慕课网总部",
+            "buyerOpenid": "ew3euwhd7sjw9diwkq",
+            "orderAmount": 14.4,
+            "orderStatus": 0,
+            "payStatus": 0,
+            "createTime": 1550731009000,
+            "updateTime": 1550731009000,
+            "orderDetailList": null
+        }
+    ]
+}
+```
+发现"createTime": 1550731009000时间戳不对为毫秒时间戳需求是秒时间戳
+新建一个包serializer 新建Date2LongSerializer
+
+## TIPS
+
+如果需要将返回值为空的字段去掉，例如下面这个orderDetailList字段。可以在实体**类**上加上注解，那么这个类中所有的null字段都不会显示。
+```
+@Data
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public class OrderDTO {
+    /** 订单明细列表 */
+    List<OrderDetail> orderDetailList;
+}
+``` 
+如果想要全部的null字段都不显示，则可以在application.yml配置文件中设置
+```
+spring.jackson.default-property-inclusion: non_null
+```
+如果需要字段必须返回但又不能为null，比如下面的orderDetailList字段期待返回[]而不是null，则可以在类里面给他赋初始值
+```
+List<OrderDetail> orderDetailList = new ArrayList<>();
+```
+
+```json
+{
+    "orderId": "1550846770444443533",
+    "buyerName": " 张三",
+    "buyerPhone": "18868822111",
+    "buyerAddress": "慕课网总部",
+    "buyerOpenid": "ew3euwhd7sjw9diwkq",
+    "orderAmount": 14.4,
+    "orderStatus": 0,
+    "payStatus": 0,
+    "createTime": 1550817970,
+    "updateTime": 1550817970,
+    "orderDetailList": null
+}
+```
 
 
 
