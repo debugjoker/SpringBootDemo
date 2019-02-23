@@ -6,6 +6,7 @@ import me.debugjoker.sell.dto.OrderDTO;
 import me.debugjoker.sell.enums.ResultEnum;
 import me.debugjoker.sell.exception.SellException;
 import me.debugjoker.sell.form.OrderForm;
+import me.debugjoker.sell.service.BuyerService;
 import me.debugjoker.sell.service.OrderService;
 import me.debugjoker.sell.utils.ResultVOUtil;
 import me.debugjoker.sell.vo.ResultVO;
@@ -30,6 +31,9 @@ import java.util.Map;
 @RequestMapping("/buyer/order")
 @Slf4j
 public class BuyerOrderController {
+
+    @Autowired
+    private BuyerService buyerService;
 
     @Autowired
     private OrderService orderService;
@@ -71,7 +75,17 @@ public class BuyerOrderController {
     }
 
     // 订单详情
+    @GetMapping("/detail")
+    public ResultVO<OrderDTO> detail(@RequestParam("openid") String openid, @RequestParam("orderId") String orderId) {
+        OrderDTO orderDTO = buyerService.findOrderOne(openid, orderId);
+        return ResultVOUtil.success(orderDTO);
+    }
 
     // 取消订单
+    @PostMapping("/cancel")
+    public ResultVO cancel(@RequestParam("openid") String openid, @RequestParam("orderId") String orderId) {
+        buyerService.cancelOrderOne(openid, orderId);
+        return ResultVOUtil.success();
+    }
 
 }
