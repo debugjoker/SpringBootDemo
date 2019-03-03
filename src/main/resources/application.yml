@@ -14,4 +14,7 @@ logging:
   level: debug
 server:
   context-path: /sell
+weChat:
+  mpAppId: wx2f0ca69f45b1075e
+  mpAppSecret: fb863a5f7498fe9fb18ee5a3ae78c673
 
