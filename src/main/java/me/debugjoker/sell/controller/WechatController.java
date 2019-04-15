@@ -19,6 +19,8 @@ import java.net.URLEncoder;
  * @author: ZhangMengwei
  * @create: 2019-02-24 15:08
  * SDK方式获取openId
+ * 微信端直接打开以下链接即可
+ * http://zlq.xxgblog.com/sell/wechat/authorize?returnUrl=https://www.baidu.com/
  **/
 @Controller
 @RequestMapping("/wechat")
@@ -30,7 +32,7 @@ public class WechatController {
 
     @GetMapping("/authorize")
     public String authorize(@RequestParam("returnUrl") String returnUrl) {
-        String url = "http://debugjoker.natapp1.cc/sell/wechat/userInfo";
+        String url = "http://zlq.xxgblog.com/sell/wechat/userInfo";
         String redirectUrl = wxMpService.oauth2buildAuthorizationUrl(url, WxConsts.OAuth2Scope.SNSAPI_BASE, URLEncoder.encode(returnUrl));
         log.info("[微信网页授权] 获取code，result = {}", redirectUrl);
         return "redirect:" + redirectUrl;
@@ -39,7 +41,7 @@ public class WechatController {
     @GetMapping("/userInfo")
     public String userInfo(@RequestParam("code") String code,
                          @RequestParam("state") String returnUrl) {
-        WxMpOAuth2AccessToken wxMpOAuth2AccessToken = new WxMpOAuth2AccessToken();
+        WxMpOAuth2AccessToken wxMpOAuth2AccessToken;
         try {
             wxMpOAuth2AccessToken = wxMpService.oauth2getAccessToken(code);
         } catch (WxErrorException e) {

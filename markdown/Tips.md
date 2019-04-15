@@ -28,6 +28,10 @@
 ```
 
 ## SDK获取openId
+微信端直接打开以下[链接](http://zlq.xxgblog.com/sell/wechat/authorize?returnUrl=https://www.baidu.com/)即可
+
+## 如何在微信上面访问网站
+使用代理将手机上面的所有请求转发到电脑上就可以将sell.com转到本地项目
 
 
 

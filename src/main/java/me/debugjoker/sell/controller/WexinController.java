@@ -17,6 +17,10 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/weixin")
 public class WexinController {
 
+    /**
+     * 微信端直接访问这个链接即可拿到openid
+     * https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2f0ca69f45b1075e&redirect_uri=http://zlq.xxgblog.com/sell/weixin/auth&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
+     */
     @GetMapping("/auth")
     public void auth(@RequestParam("code") String code) {
         log.info("进入auth方法中.......");
