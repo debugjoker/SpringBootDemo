@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
@@ -33,7 +34,7 @@ public class OrderServiceImplTest {
     @Autowired
     private OrderServiceImpl orderService;
 
-    private final String BUYER_OPENID = "1101110";
+    private final String BUYER_OPENID = "112112";
 
     @Test
     public void create() {
@@ -93,5 +94,12 @@ public class OrderServiceImplTest {
         OrderDTO orderDTO = orderService.findOne("1547995126238367642");
         OrderDTO result = orderService.paid(orderDTO);
         Assert.assertEquals(PayStatusEnum.SUCCESS.getCode(), result.getPayStatus());
+    }
+
+    @Test
+    public void list() {
+        PageRequest request = new PageRequest(0, 10);
+        Page<OrderDTO> orderDTOPage = orderService.findList(request);
+        Assert.assertNotEquals(0, orderDTOPage.getTotalElements());
     }
 }
