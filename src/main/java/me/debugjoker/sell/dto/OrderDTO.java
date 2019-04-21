@@ -3,7 +3,7 @@ package me.debugjoker.sell.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import me.debugjoker.sell.domain.OrderDetail;
-import me.debugjoker.sell.serializer.Date2LongSerializer;
+import me.debugjoker.sell.utils.serializer.Date2LongSerializer;
 
 import java.math.BigDecimal;
 import java.util.Date;

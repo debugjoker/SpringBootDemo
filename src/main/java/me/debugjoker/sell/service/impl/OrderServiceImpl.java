@@ -14,6 +14,7 @@ import me.debugjoker.sell.exception.SellException;
 import me.debugjoker.sell.repository.OrderDetailRepository;
 import me.debugjoker.sell.repository.OrderMasterRepository;
 import me.debugjoker.sell.service.OrderService;
+import me.debugjoker.sell.service.PayService;
 import me.debugjoker.sell.service.ProductService;
 import me.debugjoker.sell.utils.KeyUtil;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +46,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderMasterRepository orderMasterRepository;
+
+    @Autowired
+    private PayService payService;
 
     @Override
     @Transactional
@@ -159,7 +163,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 如果已支付，需要退款
         if (orderDTO.getPayStatus().equals(PayStatusEnum.SUCCESS.getCode())) {
-            //TODO
+            payService.refund(orderDTO);
         }
 
         return orderDTO;

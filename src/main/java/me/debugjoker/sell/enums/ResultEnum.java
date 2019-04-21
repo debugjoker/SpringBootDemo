@@ -20,6 +20,7 @@ public enum ResultEnum {
     CART_EMPTY(18, "购物车不能为空"),
     ORDER_OWNER_ERROR(19, "该订单不属于当前用户"),
     WECHAT_MP_ERROR(20, "微信公众号方面异常"),
+    WXPAY_NOTIFY_MONEY_VERTIFY_ERROR(21, "微信异步通知返回金额与订单金额不一致"),
     ;
 
 
