@@ -1,5 +1,7 @@
 package me.debugjoker.sell.converter;
 
+import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import me.debugjoker.sell.domain.OrderMaster;
 import me.debugjoker.sell.dto.OrderDTO;
 import org.springframework.beans.BeanUtils;
@@ -12,7 +14,6 @@ import java.util.List;
  * @create: 2019-02-17 14:32
  * OrderMaster转换成OrderDTO类型
  **/
-
 public class OrderMaster2OrderDTOConverter {
 
     public static OrderDTO convert(OrderMaster orderMaster) {
@@ -22,9 +23,9 @@ public class OrderMaster2OrderDTOConverter {
     }
 
     public static List<OrderDTO> convert(List<OrderMaster> orderMasterList) {
-        OrderDTO orderDTO = new OrderDTO();
         List<OrderDTO> orderDTOList = new ArrayList<>();
         for (OrderMaster orderMaster : orderMasterList) {
+            OrderDTO orderDTO = new OrderDTO();
             BeanUtils.copyProperties(orderMaster, orderDTO);
             orderDTOList.add(orderDTO);
         }
