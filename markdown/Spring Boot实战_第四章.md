@@ -165,11 +165,11 @@ public class ProductCategoryRepositoryTest {
 ```
 如果想让更改时间自动修改的话要在实体类ProductCategory上添加@DynamicUpdate注解动态更新
 
-### 1.1.6. 使用lombock
+### 1.1.6. 使用lombok
 
 实体类可以不写Get和Set还有tostring还有构造器方法，具体如下
 
-**引入lombock依赖**
+**引入lombok依赖**
 
 ```xml
 <!--导入lombok依赖自动生成get和set方法-->
