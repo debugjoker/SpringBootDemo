@@ -24,6 +24,7 @@ public enum ResultEnum {
     WXPAY_NOTIFY_MONEY_VERTIFY_ERROR(21, "微信异步通知返回金额与订单金额不一致"),
     ORDER_CANCEL_SUCCESS(22, "订单取消成功"),
     ORDER_FINISH_SUCCESS(23, "订单完结成功"),
+    PRODUCT_STATUS_ERROR(24, "商品状态不正确"),
     ;
 
 

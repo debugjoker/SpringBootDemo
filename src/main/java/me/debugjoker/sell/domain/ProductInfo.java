@@ -1,10 +1,15 @@
 package me.debugjoker.sell.domain;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
+import me.debugjoker.sell.enums.ProductStatusEnum;
+import me.debugjoker.sell.utils.EnumUtil;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 商品
@@ -14,6 +19,7 @@ import java.math.BigDecimal;
  **/
 @Entity
 @Data
+@DynamicUpdate
 public class ProductInfo {
 
     @Id
@@ -33,8 +39,13 @@ public class ProductInfo {
     /*类目编号*/
     private Integer categoryType;
     /*创建时间*/
-//    private Date createTime;
+    private Date createTime;
     /*修改时间*/
-//    private Date updateTime;
+    private Date updateTime;
+
+    @JSONField(serialize = false)
+    public ProductStatusEnum getProductStatusEnum() {
+        return EnumUtil.getByCode(productStatus, ProductStatusEnum.class);
+    }
 
 }
