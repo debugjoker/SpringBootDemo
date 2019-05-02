@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 /**
  * 商品
+ *
  * @author: Mengwei Zhang
  * @create: 2018-08-19 21:56
  **/

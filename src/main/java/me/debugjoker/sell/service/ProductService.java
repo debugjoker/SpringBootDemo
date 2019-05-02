@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * 商品
+ *
  * @author: Mengwei Zhang
  * @create: 2018-08-21 22:23
  **/
@@ -19,6 +20,7 @@ public interface ProductService {
 
     /**
      * 查询所有在架商品列表
+     *
      * @return
      */
     List<ProductInfo> findUpAll();

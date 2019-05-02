@@ -4,13 +4,14 @@ import lombok.Getter;
 
 /**
  * 商品状态枚举类
+ *
  * @author: Mengwei Zhang
  * @create: 2018-08-21 22:36
  **/
 @Getter
-public enum  ProductStatusEnum {
-    UP(0,"在售"),
-    DOWN(1,"下架");
+public enum ProductStatusEnum {
+    UP(0, "在售"),
+    DOWN(1, "下架");
 
     private Integer code;
 

@@ -10,7 +10,7 @@ import java.util.List;
  * @create: 2018-08-19 22:15
  **/
 
-public interface ProductInfoRepository extends JpaRepository<ProductInfo,String> {
+public interface ProductInfoRepository extends JpaRepository<ProductInfo, String> {
 
     List<ProductInfo> findByProductStatus(Integer productStatus);
 

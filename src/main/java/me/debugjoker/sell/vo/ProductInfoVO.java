@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 /**
  * 返回给前端的商品信息
+ *
  * @author: Mengwei Zhang
  * @create: 2018-08-26 22:07
  **/

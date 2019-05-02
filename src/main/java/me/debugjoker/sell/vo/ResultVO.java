@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 返回给前端的数据封装
+ *
  * @author: Mengwei Zhang
  * @create: 2018-08-26 21:43
  **/

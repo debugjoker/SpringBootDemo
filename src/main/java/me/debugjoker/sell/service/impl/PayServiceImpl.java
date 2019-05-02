@@ -7,7 +7,6 @@ import com.lly835.bestpay.model.PayResponse;
 import com.lly835.bestpay.model.RefundRequest;
 import com.lly835.bestpay.model.RefundResponse;
 import com.lly835.bestpay.service.impl.BestPayServiceImpl;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import me.debugjoker.sell.dto.OrderDTO;
 import me.debugjoker.sell.enums.ResultEnum;
@@ -17,8 +16,6 @@ import me.debugjoker.sell.service.PayService;
 import me.debugjoker.sell.utils.MathUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 
 /**
  * @author: ZhangMengwei

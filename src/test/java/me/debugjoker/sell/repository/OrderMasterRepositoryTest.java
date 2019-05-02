@@ -43,6 +43,6 @@ public class OrderMasterRepositoryTest {
 
         Page<OrderMaster> result = orderMasterRepository.findByBuyerOpenid("112112", request);
 
-        Assert.assertNotEquals(0,result.getTotalElements());
+        Assert.assertNotEquals(0, result.getTotalElements());
     }
 }

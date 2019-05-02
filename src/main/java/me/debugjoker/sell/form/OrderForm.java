@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  **/
 @Data
 public class OrderForm {
-    
+
     /**
      * 买家姓名
      **/

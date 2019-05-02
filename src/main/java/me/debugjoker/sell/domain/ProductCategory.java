@@ -1,7 +1,6 @@
 package me.debugjoker.sell.domain;
 
 
-
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -12,6 +11,7 @@ import javax.persistence.Id;
 
 /**
  * 类目表对应实体类
+ *
  * @author: Mengwei Zhang
  * @create: 2018-08-12 11:45
  **/
@@ -35,5 +35,6 @@ public class ProductCategory {
         this.categoryType = categoryType;
     }
 
-    public ProductCategory() {}
+    public ProductCategory() {
+    }
 }

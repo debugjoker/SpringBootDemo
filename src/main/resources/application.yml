@@ -2,8 +2,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
-#    password: 123456
-#    url: jdbc:mysql://192.168.199.194:3306/sell?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    #    password: 123456
+    #    url: jdbc:mysql://192.168.199.194:3306/sell?useUnicode=true&characterEncoding=utf-8&useSSL=false
     password: debugjoker
     url: jdbc:mysql://127.0.0.1:3306/weixin?useUnicode=true&characterEncoding=utf-8&useSSL=false
   jpa:
@@ -17,14 +17,14 @@ logging:
 server:
   context-path: /sell
 weChat:
-#  微信授权
+  #  微信授权
   mpAppId: wx2f0ca69f45b1075e
   mpAppSecret: fb863a5f7498fe9fb18ee5a3ae78c673
-#  商户密钥及商户id
+  #  商户密钥及商户id
   mchId: 1483469312
   mchKey: 06C56A89949D617xxxxxxxxxxx
-#  微信退款证书路径
+  #  微信退款证书路径
   keyPath: /var/weixin_cert/h5.p12
-#  微信通知调用方法
+  #  微信通知调用方法
   notifyUrl: http://zlq.xxgblog.com/sell/pay/notify
 

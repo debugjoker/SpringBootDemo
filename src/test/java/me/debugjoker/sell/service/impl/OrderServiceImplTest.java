@@ -5,7 +5,6 @@ import me.debugjoker.sell.domain.OrderDetail;
 import me.debugjoker.sell.dto.OrderDTO;
 import me.debugjoker.sell.enums.OrderStatusEnum;
 import me.debugjoker.sell.enums.PayStatusEnum;
-import me.debugjoker.sell.repository.OrderDetailRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,14 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * @author: ZhangMengwei
