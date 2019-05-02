@@ -521,6 +521,10 @@ public class ResultVOUtil {
 
 ```vi /usr/local/nginx/conf/nginx.conf``` 
 
+按住i键盘
+
+移动光标到下面的配置修改后 按esc键 之后按shift键+ :键 在输入wq 按回车
+
 修改下面的配置项改为
 
 ```json
