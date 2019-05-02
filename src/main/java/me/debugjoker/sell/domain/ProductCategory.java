@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Date;
 
 /**
  * 类目表对应实体类
@@ -29,6 +30,10 @@ public class ProductCategory {
     //类目编号
     @Column
     private Integer categoryType;
+
+    private Date createTime;
+
+    private Date updateTime;
 
     public ProductCategory(String categoryName, Integer categoryType) {
         this.categoryName = categoryName;
