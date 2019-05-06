@@ -517,6 +517,8 @@ public class ResultVOUtil {
 
 先在浏览器地址栏输入 ```你的ip地址/#/order``` f12 console中输入 ```document.cookie='openid=abc123';``` 在访问```你的ip地址···
 
+在访问虚拟机ip地址就可以看到了
+
 进入虚拟机修改nginx配置 
 
 ```vi /usr/local/nginx/conf/nginx.conf``` 
@@ -535,7 +537,7 @@ location /sell/ {
 ```
 重启nginx ```nginx -s reload```
 
-在访问虚拟机ip地址就可以看到了
+
 
 ### 用域名访问
 
