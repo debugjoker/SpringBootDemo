@@ -29,7 +29,7 @@ VirtualBox-5.1.22
 * 路径 /usr/local/redis
 * 配置 /etc/reis.conf
 * 端口 6379
-* 密码 123456
+* 密码 无
 * 启动 systemctl start redis
 * 停止 systemctl stop redis
 
