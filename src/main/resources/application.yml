@@ -28,3 +28,7 @@ weChat:
   #  微信通知调用方法
   notifyUrl: http://zlq.xxgblog.com/sell/pay/notify
 
+projectUrl:
+  wechatMpAuthorize: http://zlq.xxgblog.com
+  sell: http://zlq.xxgblog.com
+

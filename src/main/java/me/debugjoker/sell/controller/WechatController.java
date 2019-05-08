@@ -5,6 +5,7 @@ import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
+import me.debugjoker.sell.config.ProjectUrlConfig;
 import me.debugjoker.sell.enums.ResultEnum;
 import me.debugjoker.sell.exception.SellException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,12 @@ public class WechatController {
     @Autowired
     private WxMpService wxMpService;
 
+    @Autowired
+    private ProjectUrlConfig projectUrlConfig;
+
     @GetMapping("/authorize")
     public String authorize(@RequestParam("returnUrl") String returnUrl) {
-        String url = "http://zlq.xxgblog.com/sell/wechat/userInfo";
+        String url = projectUrlConfig.getWechatMpAuthorize() + "/sell/wechat/userInfo";
         String redirectUrl = wxMpService.oauth2buildAuthorizationUrl(url, WxConsts.OAuth2Scope.SNSAPI_BASE, URLEncoder.encode(returnUrl));
         log.info("[微信网页授权] 获取code，result = {}", redirectUrl);
         return "redirect:" + redirectUrl;
