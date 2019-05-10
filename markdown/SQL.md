@@ -69,6 +69,43 @@ create table `seller_info` (
     primary key (`id`)
 ) comment '卖家信息表';
 
+-- 创建角色表
+CREATE TABLE IF NOT EXISTS `t_role` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `rolename` varchar(20) DEFAULT NULL COMMENT '角色名称',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='角色表';
+
+-- 插入角色数据
+INSERT INTO `t_role` (`id`, `rolename`) VALUES (1, 'admin'), (2, 'staff');
+
+-- 创建用户表
+CREATE TABLE IF NOT EXISTS `t_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户主键',
+  `username` varchar(20) NOT NULL COMMENT '用户名',
+  `password` varchar(20) NOT NULL COMMENT '密码',
+  `role_id` int(11) DEFAULT NULL COMMENT '外键关联role表',
+  PRIMARY KEY (`id`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `t_user_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `t_role` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='用户表';
+
+-- 插入用户信息
+INSERT INTO `t_user` (`id`, `username`, `password`, `role_id`) VALUES (1, 'admin', '111111', 1), (2, 'test', '111111', 2);
+
+-- 创建权限表
+CREATE TABLE IF NOT EXISTS `t_permission` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `permissionname` varchar(50) NOT NULL COMMENT '权限名',
+  `role_id` int(11) DEFAULT NULL COMMENT '外键关联role',
+  PRIMARY KEY (`id`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `t_permission_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `t_role` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='角色权限表';
+
+-- 插入角色权限
+INSERT INTO `t_permission` (`id`, `permissionname`, `role_id`) VALUES(1, 'category:*', 1),(2, 'order:*', 1),(3, 'product:*', 1),(4, 'order:*', 2);
+
 ```
 
 
