@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -9,6 +8,8 @@
     <title>登陆界面</title>
 
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <style type="text/css">
         body {
@@ -22,13 +23,16 @@
             padding: 15px;
             margin: 0 auto;
         }
+
         .form-signin .form-signin-heading,
         .form-signin .checkbox {
             margin-bottom: 10px;
         }
+
         .form-signin .checkbox {
             font-weight: normal;
         }
+
         .form-signin .form-control {
             position: relative;
             height: auto;
@@ -38,14 +42,17 @@
             padding: 10px;
             font-size: 16px;
         }
+
         .form-signin .form-control:focus {
             z-index: 2;
         }
+
         .form-signin input[type="text"] {
             margin-bottom: -1px;
             border-bottom-right-radius: 0;
             border-bottom-left-radius: 0;
         }
+
         .form-signin input[type="password"] {
             margin-bottom: 10px;
             border-top-left-radius: 0;
@@ -63,7 +70,7 @@
 
 <div class="container">
 
-    <form class="form-signin" action="/sell/seller/login" method="post">
+    <form class="form-signin">
         <h2 class="form-signin-heading">微信点餐管理平台</h2>
         <label for="inputEmail" class="sr-only">用户名</label>
         <input type="text" id="inputEmail" name="username" class="form-control" placeholder="用户名" required autofocus>
@@ -71,13 +78,39 @@
         <input type="password" id="inputPassword" name="password" class="form-control" placeholder="密码" required>
         <div class="checkbox">
             <label>
-                <input type="checkbox" value="remember-me"> Remember me
+                <input type="checkbox" name="rememberMe" value="remember-me"> Remember me
             </label>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit" >登陆</button>
+        <a class="btn btn-lg btn-primary btn-block" role="button" id="loginButton">登陆</a>
     </form>
+
 
 </div> <!-- /container -->
 
+<script>
+    $('#loginButton').on('click', function () {
+        let username = $("input[name='username']").val();
+        let password = $("input[name='password']").val();
+        let rememberMe = $("input[name='rememberMe']").prop('checked');
+        $.ajax({
+            type: "post",
+            url: "/sell/seller/login",
+            data: {
+                username: username,
+                password: password,
+                rememberMe: rememberMe
+            },
+            dataType: "json",
+            success: function (r) {
+                console.log(r);
+                if (r) {
+                    window.location.href = "/sell/seller/order/list";
+                } else {
+                    window.location.href = "/sell/seller/login";
+                }
+            }
+        })
+    });
+</script>
 </body>
 </html>
