@@ -108,7 +108,7 @@ public class ShiroConfig {
         // 配置 logout 过滤器
         filterChainMap.put("/sell/seller/logout", "logout");
 
-        filterChainMap.put("/**", "user");
+        filterChainMap.put("/seller/**", "user");
 
         // 设置 shiroFilterFactoryBean 的 FilterChainDefinitionMap
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainMap);
