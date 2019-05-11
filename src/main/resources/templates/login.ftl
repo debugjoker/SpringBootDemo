@@ -89,9 +89,9 @@
 
 <script>
     $('#loginButton').on('click', function () {
-        let username = $("input[name='username']").val();
-        let password = $("input[name='password']").val();
-        let rememberMe = $("input[name='rememberMe']").prop('checked');
+        var username = $("input[name='username']").val();
+        var password = $("input[name='password']").val();
+        var rememberMe = $("input[name='rememberMe']").prop('checked');
         $.ajax({
             type: "post",
             url: "/sell/seller/login",

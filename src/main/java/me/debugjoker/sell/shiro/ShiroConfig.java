@@ -103,7 +103,7 @@ public class ShiroConfig {
         filterChainMap.put("/seller/product*/**", "roles[admin]");
 
         // 下面的链接需要用户拥有user:cancel权限才能操作
-        filterChainMap.put("/seller/order/cancel", "perms[\"user:cancel\"]");
+        filterChainMap.put("/seller/order/cancel", "perms[\"order:cancel\"]");
 
         // 配置 logout 过滤器
         filterChainMap.put("/sell/seller/logout", "logout");
