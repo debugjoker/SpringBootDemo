@@ -7,6 +7,8 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,6 +43,7 @@ public class ShiroConfig {
         // 将自定义realm加进来
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(myAuthRealm());
         securityManager.setRememberMeManager(rememberMeManager());
+        securityManager.setCacheManager(cacheManager());
         log.info("====securityManager注册完成====");
         return securityManager;
     }
@@ -65,6 +68,23 @@ public class ShiroConfig {
         // rememberMe cookie加密的密钥
         cookieRememberMeManager.setCipherKey(Base64.decode("4AvVhmFLUs0KTA3Kprsdag=="));
         return cookieRememberMeManager;
+    }
+
+    /**
+     * shiro-redis配置
+     */
+    public RedisManager redisManager() {
+        RedisManager redisManager = new RedisManager();
+        return redisManager;
+    }
+
+    /**
+     * shiro-redis配置
+     */
+    public RedisCacheManager cacheManager() {
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(redisManager());
+        return redisCacheManager;
     }
 
     /**

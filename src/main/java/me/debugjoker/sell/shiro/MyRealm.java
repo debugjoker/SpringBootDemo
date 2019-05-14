@@ -1,5 +1,6 @@
 package me.debugjoker.sell.shiro;
 
+import lombok.extern.slf4j.Slf4j;
 import me.debugjoker.sell.domain.User;
 import me.debugjoker.sell.service.impl.UserService;
 import org.apache.shiro.SecurityUtils;
@@ -15,15 +16,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 自定义Realm
+ *
  * @author: ZhangMengwei
  * @create: 2019-05-10 10:53
  **/
-
+@Slf4j
 public class MyRealm extends AuthorizingRealm {
 
     @Autowired
     private UserService userService;
 
+    /***
+     * 获取用户角色和权限
+     */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         // 获取用户名
@@ -33,6 +38,7 @@ public class MyRealm extends AuthorizingRealm {
         authorizationInfo.setRoles(userService.getRoles(username));
         // 给该用户设置权限，权限信息存在 t_permission 表中取
         authorizationInfo.setStringPermissions(userService.getPermissions(username));
+        log.info("用户" + username + "获取权限");
         return authorizationInfo;
     }
 
@@ -41,7 +47,7 @@ public class MyRealm extends AuthorizingRealm {
         String username = (String) authenticationToken.getPrincipal();
         // 根据用户名从数据库中查询该用户
         User user = userService.getByUsername(username);
-        if(user != null) {
+        if (user != null) {
             // 把当前用户存到 Session 中
             SecurityUtils.getSubject().getSession().setAttribute("user", user);
             // 传入用户名和密码进行身份认证，并返回认证信息
